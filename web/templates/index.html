@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Selection System</title>
+</head>
+<body>
+    <h1>Course Selection System</h1>
+    
+    <h2>Available Courses</h2>
+    <ul>
+        {% for course in courses %}
+            <li>{{ course.name }} - {{ course.time }}</li>
+            <form action="/select_course" method="post">
+                <input type="hidden" name="course_id" value="{{ course.id }}">
+                <input type="submit" value="Select">
+            </form>
+        {% endfor %}
+    </ul>
+    
+    <h2>Selected Courses</h2>
+    <ul>
+        {% for selected_course in selected_courses %}
+            <li>{{ selected_course.name }} - {{ selected_course.time }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
