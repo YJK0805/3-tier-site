@@ -1,0 +1,65 @@
+/* styles.css */
+
+/* 標題和導航欄的基本樣式 */
+header {
+    background-color: #007bff; /* 背景顏色 */
+    color: #ffffff; /* 文字顏色 */
+    padding: 10px 0; /* 上下間距 */
+    display: flex; /* 使用 Flexbox */
+    justify-content: space-between; /* 左右兩端對齊 */
+    align-items: center; /* 垂直居中對齊 */
+}
+
+header h1 {
+    margin-left: 20px; /* 左邊間距 */
+}
+
+header nav ul {
+    list-style-type: none; /* 移除列表樣式 */
+    padding: 0; /* 移除內部填充 */
+    margin: 0; /* 移除邊距 */
+}
+
+header nav ul li {
+    display: inline; /* 讓連結水平排列 */
+    margin-right: 20px; /* 調整連結間距 */
+}
+
+header nav ul li:last-child {
+    margin-right: 0; /* 最後一個連結不設定右邊距 */
+}
+
+header nav ul li a {
+    color: #ffffff; /* 連結文字顏色 */
+    text-decoration: none; /* 移除下劃線 */
+}
+
+header nav ul li a:hover {
+    text-decoration: underline; /* 鼠標懸停時添加下劃線 */
+}
+
+footer {
+    background-color: #f8f9fa; /* 背景顏色 */
+    padding: 20px 0; /* 上下间距 */
+    text-align: center; /* 文字居中 */
+    margin-top: auto; /* 将 Footer 推到页面底部 */
+}
+
+/* 增加表格的外邊框和內邊距 */
+table {
+    border-collapse: collapse;
+    width: 40%;
+}
+
+td, th, tr {
+    width: 20px; /* 設定寬度 */
+    height: 10px; /* 設定高度 */
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+table{
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
