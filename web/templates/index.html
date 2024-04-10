@@ -3,27 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Course Selection System</title>
+    <title>Home</title>
 </head>
 <body>
-    <h1>Course Selection System</h1>
-    
-    <h2>Available Courses</h2>
+    <h1>Welcome to the Student Course Registration System</h1>
+    <p>Please select an option:</p>
     <ul>
-        {% for course in courses %}
-            <li>{{ course.name }} - {{ course.time }}</li>
-            <form action="/select_course" method="post">
-                <input type="hidden" name="course_id" value="{{ course.id }}">
-                <input type="submit" value="Select">
-            </form>
-        {% endfor %}
-    </ul>
-    
-    <h2>Selected Courses</h2>
-    <ul>
-        {% for selected_course in selected_courses %}
-            <li>{{ selected_course.name }} - {{ selected_course.time }}</li>
-        {% endfor %}
+        <li><a href="/login">Login</a></li>
+        <li><a href="/register">Register</a></li>
     </ul>
 </body>
 </html>
+
