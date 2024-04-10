@@ -54,16 +54,26 @@ def insert_required_and_same_class_courses(student_id, student_name, student_cla
     finally:
         conn.close()
 
-# 從資料庫中獲取學生的選課記錄
-def get_student_courses(student_id):
+# 獲取學生所選課程及上課時間
+def get_student_course_schedule(student_id):
     conn = pymysql.connect(**db_settings)
     try:
         with conn.cursor() as cursor:
-            # 查詢學生的選課記錄的 SQL 語句
-            sql = "SELECT * FROM selected_course WHERE student_id = %s"
+            sql = """
+                SELECT 
+                    course.course_code, course.course_name, course.department, 
+                    coursetime.day_of_week, coursetime.start_period, coursetime.end_period
+                FROM 
+                    selected_course
+                JOIN 
+                    course ON selected_course.selected_course_code = course.course_code
+                JOIN 
+                    coursetime ON course.course_code = coursetime.course_code
+                WHERE 
+                    selected_course.student_id = %s
+            """
             cursor.execute(sql, (student_id,))
-            student_courses = cursor.fetchall()
+            student_schedule = cursor.fetchall()
     finally:
         conn.close()
-    return student_courses
-
+    return student_schedule
