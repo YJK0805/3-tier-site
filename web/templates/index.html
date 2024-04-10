@@ -1,17 +1,13 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home</title>
-</head>
-<body>
+{% extends "master.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
     <h1>Welcome to the Student Course Registration System</h1>
     <p>Please select an option:</p>
     <ul>
         <li><a href="/login">Login</a></li>
         <li><a href="/register">Register</a></li>
     </ul>
-</body>
-</html>
+{% endblock %}
 

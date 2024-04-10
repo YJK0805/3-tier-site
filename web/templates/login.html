@@ -1,19 +1,16 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
-</head>
-<body>
+{% extends "master.html" %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
     <h1>Login</h1>
     <form action="/login" method="post">
-        <label for="student_id">student_id:</label><br>
-        <input type="text" id="student_id" name="student_id"><br>
+        <label for="student_id">Student ID:</label><br>
+        <input type="text" id="student_id" name="student_id" required><br>
         <label for="password">Password:</label><br>
-        <input type="password" id="password" name="password"><br><br>
+        <input type="password" id="password" name="password" required><br><br>
         <input type="submit" value="Login">
     </form>
     <p>Don't have an account? <a href="/register">Register here</a>.</p>
-</body>
-</html>
+{% endblock %}
+

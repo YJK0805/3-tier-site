@@ -1,34 +1,29 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Schedule</title>
-</head>
-<body>
+{% extends "master.html" %}
+
+{% block title %}Schedule{% endblock %}
+
+{% block content %}
     <h1>Student Schedule</h1>
     <table border="1">
         <thead>
             <tr>
-                <th>Course Code</th>
-                <th>Course Name</th>
-                <th>Day of Week</th>
-                <th>Start Period</th>
-                <th>End Period</th>
+                <th>&nbsp;</th>
+                <th>一</th>
+                <th>二</th>
+                <th>三</th>
+                <th>四</th>
+                <th>五</th>
             </tr>
         </thead>
         <tbody>
-            {% for course in student_courses %}
+            {% for course_row in student_courses %}
             <tr>
-                <td>{{ course[4] }}</td>
-                <td>{{ course[1] }}</td>
-                <td>{{ course.day_of_week }}</td>
-                <td>{{ course.start_period }}</td>
-                <td>{{ course.end_period }}</td>
+                {% for course in course_row %}
+                <td>{{ course }}</td>
+                {% endfor %}
             </tr>
             {% endfor %}
         </tbody>
     </table>
-</body>
-</html>
+{% endblock %}
 
