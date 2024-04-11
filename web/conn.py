@@ -11,12 +11,12 @@ db_settings = {
 }
 
 # 註冊新用戶
-def register_user(student_name, student_id, student_class, password):
+def register_user(student_name, student_id, student_department, student_class, password):
     conn = pymysql.connect(**db_settings)
     try:
         with conn.cursor() as cursor:
-            sql = "INSERT INTO students (student_name, student_id, student_class, password) VALUES (%s, %s, %s, %s)"
-            cursor.execute(sql, (student_name, student_id, student_class, password))
+            sql = "INSERT INTO students (student_name, student_id, department, student_class, password) VALUES (%s, %s, %s, %s, %s)"
+            cursor.execute(sql, (student_name, student_id, student_department, student_class, password))
         conn.commit()
     finally:
         conn.close()
@@ -77,3 +77,36 @@ def get_student_course_schedule(student_id):
     finally:
         conn.close()
     return student_schedule
+
+# 獲取學生科系
+def get_student_department(student_class):
+    conn = pymysql.connect(**db_settings)
+    try:
+        with conn.cursor() as cursor:
+            sql = "SELECT department FROM course WHERE class_name = %s LIMIT 1"
+            cursor.execute(sql, (student_class,))
+            department = cursor.fetchone()
+    finally:
+        conn.close()
+    return department[0]
+
+# 更新學生學分數
+def update_student_credit(student_id):
+    conn = pymysql.connect(**db_settings)
+    try:
+        with conn.cursor() as cursor:
+            sql = """
+                SELECT 
+                    SUM(credits_selected) 
+                FROM 
+                    selected_course 
+                WHERE 
+                    student_id = %s
+            """
+            cursor.execute(sql, (student_id,))
+            total_credit = cursor.fetchone()
+            sql = "UPDATE students SET credits_selected = %s WHERE student_id = %s"
+            cursor.execute(sql, (total_credit[0], student_id))
+        conn.commit()
+    finally:
+        conn.close()

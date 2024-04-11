@@ -141,13 +141,14 @@ CREATE TABLE IF NOT EXISTS selected_course (
 CREATE TABLE IF NOT EXISTS students (
     student_name VARCHAR(255),
     student_id VARCHAR(255) PRIMARY KEY,
+    department VARCHAR(255),
     student_class VARCHAR(255),
     credits_selected INT,
     password VARCHAR(255)
 );
 
 -- 將學生資料寫入學生表格
-INSERT INTO students (student_name, student_id, student_class, credits_selected, password)
+INSERT INTO students (student_name, student_id, department, student_class, credits_selected, password)
 VALUES
-('admin', 'D0000000', '資訊四乙', 0, 'password');
+('admin', 'D0000000', '資訊', '資訊四乙', 0, 'admin');
 

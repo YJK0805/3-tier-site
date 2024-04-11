@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for
-from conn import register_user, authenticate_user, insert_required_and_same_class_courses,get_student_course_schedule
+from conn import register_user, authenticate_user, insert_required_and_same_class_courses,get_student_course_schedule,get_student_department, update_student_credit
 
 app = Flask(__name__)
 
@@ -34,9 +34,12 @@ def register():
         student_class = request.form['student_class']
         password = request.form['password']
         # 註冊新用戶
-        register_user(student_name, student_id, student_class, password)
+        student_department = get_student_department(student_class)
+        register_user(student_name, student_id, student_department, student_class, password)
         # 插入必修及相同班級的課程
         insert_required_and_same_class_courses(student_id, student_name, student_class)
+        # 更新學生學分
+        update_student_credit(student_id)
         return redirect(url_for('login'))
     return render_template('register.html')
 
