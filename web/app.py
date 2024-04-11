@@ -38,7 +38,6 @@ def login():
             # User authentication successful, log in the user
             user = User(student_id)
             login_user(user)
-            print(current_user.id)
             return redirect(url_for('index'))
         else:
             return "Invalid student ID or password. Please try again."
@@ -55,7 +54,10 @@ def register():
         register_user(student_name, student_id, student_department, student_class, password)
         insert_required_and_same_class_courses(student_id, student_name, student_class)
         update_student_credit(student_id)
-        return redirect(url_for('login'))
+        authenticate_user(student_id, password)
+        user = User(student_id)
+        login_user(user)
+        return redirect(url_for('index'))
     return render_template('register.html')
 
 @app.route('/schedule/<student_id>')

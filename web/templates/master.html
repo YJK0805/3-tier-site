@@ -13,15 +13,12 @@
             <ul>
                 <li><a href="/">Home</a></li>
                 {% if current_user.is_authenticated %}
-                    <!-- if the user is not authenticated, show the following links -->
-                {% else %}
-                    <li><a href="/login">Login</a></li>
-                    <li><a href="/register">Register</a></li>
-                {% endif %}
-                {% if current_user.is_authenticated %}
                     <!-- if the user is authenticated, show the following links -->
                     <li><a href="{{ url_for('schedule', student_id=current_user.id) }}">My Schedule</a></li>
                     <li><a href="/logout">Logout</a></li>
+                {% else %}
+                    <li><a href="/login">Login</a></li>
+                    <li><a href="/register">Register</a></li>
                 {% endif %}
             </ul>
         </nav>
