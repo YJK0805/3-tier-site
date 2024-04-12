@@ -15,6 +15,7 @@
                 {% if current_user.is_authenticated %}
                     <!-- if the user is authenticated, show the following links -->
                     <li><a href="{{ url_for('schedule', student_id=current_user.id) }}">My Schedule</a></li>
+                    <li><a href="/search_course">Search Courses</a></li>
                     <li><a href="/logout">Logout</a></li>
                 {% else %}
                     <li><a href="/login">Login</a></li>

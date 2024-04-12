@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
-from conn import register_user, authenticate_user, insert_required_and_same_class_courses, get_student_course_schedule, get_student_department, update_student_credit
+from conn import register_user, authenticate_user, insert_required_and_same_class_courses, get_student_course_schedule, get_student_department, update_student_credit, search_courses
 
 app = Flask(__name__)
 app.secret_key = 'secret_key'
@@ -87,6 +87,31 @@ def schedule(student_id):
         for i in range(start_time, end_time+1):
             select_course[i - 1][int(day)] = course_name
     return render_template('schedule.html', student_courses=select_course)
+
+@app.route('/search_course', methods=['GET', 'POST'])
+@login_required
+def search_course():
+    if request.method == 'POST':
+        course_code = request.form.get('course_code', '')
+        course_name = request.form.get('course_name', '')
+        day = request.form.get('course_day', '')
+        period = request.form.get('course_period', '')
+        instructor = request.form.get('instructor', '')
+        search_results = search_courses(course_code, course_name, day, period, instructor)
+        modified_search_results = []
+        for result in search_results:
+            result_list = list(result)
+            result_list[3] = '必修' if result_list[3] == 'R' else '選修'
+            result_list[5] = {
+                1: '(一)',
+                2: '(二)',
+                3: '(三)',
+                4: '(四)',
+                5: '(五)',
+            }.get(result_list[5], '未知')
+            modified_search_results.append(result_list)
+        return render_template('search_course.html', search_results=modified_search_results)
+    return render_template('search_course.html')
 
 @app.route('/logout')
 @login_required

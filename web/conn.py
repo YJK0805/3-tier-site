@@ -110,3 +110,36 @@ def update_student_credit(student_id):
         conn.commit()
     finally:
         conn.close()
+
+def search_courses(course_code, course_name, day, period, instructor):
+    conn = pymysql.connect(**db_settings)
+    try:
+        with conn.cursor() as cursor:
+            sql = """
+                SELECT 
+                    course.course_code, course.course_name, course.credits, course.compulsory, 
+                    course.class_name, coursetime.day_of_week, 
+                    CONCAT(coursetime.start_period, '-', coursetime.end_period) AS course_time, 
+                    course.instructor, 
+                    course.enrolled_students,
+                    course.total_students
+                FROM 
+                    course 
+                LEFT JOIN 
+                    coursetime ON course.course_code = coursetime.course_code
+                LEFT JOIN 
+                    selected_course ON course.course_code = selected_course.selected_course_code
+                WHERE 
+                    (%s = '' OR course.course_code = %s)
+                    AND (%s = '' OR course.course_name LIKE %s)
+                    AND (%s = '' OR coursetime.day_of_week = %s)
+                    AND (%s = '' OR coursetime.start_period <= %s AND coursetime.end_period >= %s)
+                    AND (%s = '' OR course.instructor = %s)
+                GROUP BY 
+                    course.course_code
+            """
+            cursor.execute(sql, (course_code, course_code, course_name, f'%{course_name}%', day, day, period, period, period, instructor, instructor))
+            search_results = cursor.fetchall()
+    finally:
+        conn.close()
+    return search_results
