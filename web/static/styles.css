@@ -40,9 +40,9 @@ header nav ul li a:hover {
 
 footer {
     background-color: #f8f9fa; /* 背景顏色 */
-    padding: 20px 0; /* 上下间距 */
+    padding: 20px 0; /* 上下間距 */
     text-align: center; /* 文字居中 */
-    margin-top: auto; /* 将 Footer 推到页面底部 */
+    margin-top: auto; /* 將 Footer 推到頁面底部 */
 }
 
 /* 增加表格的外邊框和內邊距 */
@@ -61,5 +61,15 @@ td, th, tr {
 table{
     border: 1px solid #ddd;
     padding: 8px;
+}
+
+form div {
+    margin-bottom: 10px; /* 添加底部間距 */
+}
+
+label {
+    display: inline-block; /* 讓標籤顯示在同一行 */
+    width: 100px; /* 調整寬度以對齊標籤 */
+    margin-right: 10px; /* 調整右邊距 */
 }
 
