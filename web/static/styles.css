@@ -1,6 +1,12 @@
 /* styles.css */
 
 /* 標題和導航欄的基本樣式 */
+
+body {
+    font-family: "Lucida Console", "Courier New", monospace;
+    text-align: center;
+}
+
 header {
     background-color: #007bff; /* 背景顏色 */
     color: #ffffff; /* 文字顏色 */
@@ -72,4 +78,3 @@ label {
     width: 100px; /* 調整寬度以對齊標籤 */
     margin-right: 10px; /* 調整右邊距 */
 }
-
