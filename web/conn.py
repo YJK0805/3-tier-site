@@ -143,3 +143,61 @@ def search_courses(course_code, course_name, day, period, instructor):
     finally:
         conn.close()
     return search_results
+
+def add_focus_course(student_id, course_code):
+    conn = pymysql.connect(**db_settings)
+    try:
+        with conn.cursor() as cursor:
+            # 檢查學生是否存在
+            cursor.execute("SELECT * FROM students WHERE student_id = %s", (student_id,))
+            student = cursor.fetchone()
+            if not student:
+                return False, "Student not found"
+            # 檢查課程是否存在
+            cursor.execute("SELECT * FROM course WHERE course_code = %s", (course_code,))
+            course = cursor.fetchone()
+            if not course:
+                return False, "Course not found"
+            # 檢查學生是否已經選過該課程
+            cursor.execute("""
+                SELECT * FROM selected_course WHERE student_id = %s AND selected_course_code = %s
+            """, (student_id, course_code))
+            existing_selected_course = cursor.fetchone()
+            if existing_selected_course:
+                return False, "Student has already selected this course"
+            # 檢查學生是否已經關注過該課程
+            cursor.execute("""
+                SELECT * FROM focus WHERE student_id = %s AND focused_course_code = %s
+            """, (student_id, course_code))
+            existing_focus = cursor.fetchone()
+            if existing_focus:
+                return False, "Student has already focused on this course"
+            # 將課程添加到 focus 資料表中
+            cursor.execute("""
+                INSERT INTO focus (student_id, student_class, student_name, focused_course_code)
+                VALUES (%s, %s, %s, %s)
+            """, (student_id, student[3], student[0], course_code))
+            conn.commit()
+            return True, "Course added to focus successfully"
+    except pymysql.Error as e:
+        return False, str(e)
+    finally:
+        conn.close()
+
+def get_student_focus_courses(student_id):
+    conn = pymysql.connect(**db_settings)
+    try:
+        with conn.cursor() as cursor:
+            sql = """
+                SELECT course.course_code, course.course_name, course.department, course.grade,
+                       course.class_name, course.credits, course.compulsory,
+                       course.total_students, course.enrolled_students, course.instructor
+                FROM focus
+                JOIN course ON focus.focused_course_code = course.course_code
+                WHERE focus.student_id = %s
+            """
+            cursor.execute(sql, (student_id,))
+            focus_courses = cursor.fetchall()
+    finally:
+        conn.close()
+    return focus_courses

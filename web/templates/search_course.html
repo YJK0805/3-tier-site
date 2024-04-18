@@ -41,6 +41,7 @@ Search Courses
     <table>
         <thead>
             <tr>
+                <th>Focus course</th>
                 <th>Course Code</th>
                 <th>Course Name</th>
                 <th>Credits</th>
@@ -53,6 +54,11 @@ Search Courses
         <tbody>
             {% for result in search_results %}
             <tr>
+                <td>
+                    <form action="{{ url_for('focus_course', course_code=result[0]) }}" method="POST">
+                        <button type="submit">Focus</button>
+                    </form>
+                </td>
                 <td>{{ result[0] }}</td>
                 <td>{{ result[1] }}</td>
                 <td>{{ result[2] }}</td>

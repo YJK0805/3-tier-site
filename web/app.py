@@ -1,6 +1,6 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, jsonify
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
-from conn import register_user, authenticate_user, insert_required_and_same_class_courses, get_student_course_schedule, get_student_department, update_student_credit, search_courses
+from conn import register_user, authenticate_user, insert_required_and_same_class_courses, get_student_course_schedule, get_student_department, update_student_credit, search_courses, add_focus_course, get_student_focus_courses
 
 app = Flask(__name__)
 app.secret_key = 'secret_key'
@@ -112,6 +112,30 @@ def search_course():
             modified_search_results.append(result_list)
         return render_template('search_course.html', search_results=modified_search_results)
     return render_template('search_course.html')
+
+@app.route('/focus_course/<course_code>', methods=['POST'])
+@login_required
+def focus_course(course_code):
+    '''
+    if request.method == 'POST':
+        student_id = current_user.id
+        add_focus_course(student_id, course_code)
+        return redirect(url_for('focus_list'))
+    '''
+    if request.method == 'POST':
+        student_id = current_user.id
+        success, message = add_focus_course(student_id, course_code)
+        if success:
+            return render_template('success.html')
+        else:
+            return render_template('error.html', message=message), 400
+
+@app.route('/focus_list')
+@login_required
+def focus_list():
+    # 從資料庫中獲取學生的關注課程列表
+    focus_courses = get_student_focus_courses(current_user.id)
+    return render_template('focus.html', focus_courses=focus_courses)
 
 @app.route('/logout')
 @login_required
