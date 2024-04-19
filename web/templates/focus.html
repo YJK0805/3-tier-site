@@ -12,6 +12,7 @@ Focus Course
     <table>
         <thead>
             <tr>
+                <th>Add Course</th>
                 <th>Course Code</th>
                 <th>Course Name</th>
                 <th>Department</th>
@@ -26,7 +27,11 @@ Focus Course
         </thead>
         <tbody>
             {% for course in focus_courses %}
-            <tr>
+                <td>
+                    <form action="{{ url_for('add_course', course_code=course[0]) }}" method="POST">
+                        <button type="submit">Add</button>
+                    </form>
+                </td>
                 <td>{{ course[0] }}</td>
                 <td>{{ course[1] }}</td>
                 <td>{{ course[2] }}</td>

@@ -201,3 +201,36 @@ def get_student_focus_courses(student_id):
     finally:
         conn.close()
     return focus_courses
+
+def add_course_in(student_id, course_code):
+    conn = pymysql.connect(**db_settings)
+    try:
+        with conn.cursor() as cursor:
+            # 檢查學生是否存在
+            cursor.execute("SELECT * FROM students WHERE student_id = %s", (student_id,))
+            student = cursor.fetchone()
+            if not student:
+                return False, "Student not found"
+            # 檢查課程是否存在
+            cursor.execute("SELECT * FROM course WHERE course_code = %s", (course_code,))
+            course = cursor.fetchone()
+            if not course:
+                return False, "Course not found"
+            # 檢查學生是否已經選過該課程或是有相同名稱之課程
+            cursor.execute("""
+            SELECT * FROM selected_course WHERE student_id = %s AND selected_course_code = %s OR student_id = %s AND selected_course_code IN (SELECT course_code FROM course WHERE course_name = %s)
+            """, (student_id, course_code, student_id, course[1]))
+            existing_selected_course = cursor.fetchone()
+            if existing_selected_course:
+                return False, "Student has already selected this course"
+            # 將課程添加到 selected_course 資料表中
+            cursor.execute("""
+                INSERT INTO selected_course (student_id, student_name, student_class, credits_selected, selected_course_code)
+                VALUES (%s, %s, %s, %s, %s)
+            """, (student_id, student[0], student[3], course[5], course_code))
+            conn.commit()
+            return True, "Course added to selected_course successfully"
+    except pymysql.Error as e:
+        return False, str(e)
+    finally:
+        conn.close()
