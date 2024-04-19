@@ -1,0 +1,91 @@
+{% extends "master.html" %}
+
+{% block title %}
+{% if focus_courses %}
+    Focus Course
+{% endif %}
+{% if select_course %}
+    Select Course
+{% endif %}
+{% endblock %}
+
+{% block content %}
+{% if focus_courses %}
+    <h2>Focus Course</h2>
+{% endif %}
+
+{% if select_course %}
+    <h2>Select Course</h2>
+{% endif %}
+
+{% if focus_courses or select_course %}
+    <table>
+        <thead>
+            <tr>
+                {% if focus_courses %}
+                    <th>Add Course</th>
+                {% endif %}
+                <th>Course Code</th>
+                <th>Course Name</th>
+                <th>Department</th>
+                <th>Credits</th>
+                <th>Compulsory</th>
+                <th>Time</th>
+                <th>Instructor</th>
+                <th>Enrolled/Total Seats</th>
+                {% if focus_courses %}
+                    <th>Delete</th>
+                {% endif %}
+                {% if select_course %}
+                    <th>Withdraw</th>
+                {% endif %}
+            </tr>
+        </thead>
+        <tbody>
+            {% if focus_courses %}
+                {% for course in focus_courses %}
+                    <td>
+                        <form action="{{ url_for('add_course', course_code=course[0]) }}" method="POST">
+                            <button type="submit">Add</button>
+                        </form>
+                    </td>
+                    <td>{{ course[0] }}</td>
+                    <td>{{ course[1] }}</td>
+                    <td>{{ course[2] }}</td>
+                    <td>{{ course[3] }}</td>
+                    <td>{{ course[4] }}</td>
+                    <td>{{ course[8] }}</td>
+                    <td>{{ course[7] }}</td>
+                    <td>{{ course[6] }}/{{ course[5] }}</td>
+                    <td>
+                        <form action="{{ url_for('delete_focus_course', course_code=course[0]) }}" method="POST">
+                            <button type="submit">Delete</button>
+                        </form>
+                    </tr>
+                {% endfor %}
+            {% endif %}
+            {% if select_course %}
+                {% for course in select_course %}
+                    <td>{{ course[0] }}</td>
+                    <td>{{ course[1] }}</td>
+                    <td>{{ course[2] }}</td>
+                    <td>{{ course[3] }}</td>
+                    <td>{{ course[4] }}</td>
+                    <td>{{ course[8] }}</td>
+                    <td>{{ course[7] }}</td>
+                    <td>{{ course[6] }}/{{ course[5] }}</td>
+                    <td>
+                        <form action="{{ url_for('withdraw_course', course_code=course[0]) }}" method="POST">
+                            <button type="submit">Withdraw</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            {% endif %}
+        </tbody>
+    </table>
+{% else %}
+    <p>No courses focused yet.</p>
+{% endif %}
+{% endblock %}
+

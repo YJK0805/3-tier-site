@@ -213,6 +213,23 @@ def get_student_focus_courses(student_id):
         conn.close()
     return focus_courses
 
+def get_student_selected_courses(student_id):
+    conn = pymysql.connect(**db_settings)
+    try:
+        with conn.cursor() as cursor:
+            sql = """
+                SELECT course.course_code, course.course_name, course.department,
+                       course.credits, course.compulsory, course.total_students, course.enrolled_students, course.instructor
+                FROM selected_course
+                JOIN course ON selected_course.selected_course_code = course.course_code
+                WHERE selected_course.student_id = %s
+            """
+            cursor.execute(sql, (student_id,))
+            selected_courses = cursor.fetchall()
+    finally:
+        conn.close()
+    return selected_courses
+
 def is_time_conflict(course_time1, course_time2):
     # 檢查兩門課程是否在同一天
     if course_time1[0] != course_time2[0]:
@@ -340,3 +357,65 @@ def delete_focus(student_id, course_code):
         return False, str(e)
     finally:
         conn.close()
+
+def withdraw_course_in(student_id, course_code, check):
+    conn = pymysql.connect(**db_settings)
+    try:
+        with conn.cursor() as cursor:
+            # 檢查學生是否存在
+            cursor.execute("SELECT * FROM students WHERE student_id = %s", (student_id,))
+            student = cursor.fetchone()
+            if not student:
+                return False, "Student not found"
+            # 檢查課程是否存在
+            cursor.execute("SELECT * FROM course WHERE course_code = %s", (course_code,))
+            course = cursor.fetchone()
+            if not course:
+                return False, "Course not found"
+            # 檢查學生是否已經選過該課程
+            cursor.execute("""
+                SELECT * FROM selected_course WHERE student_id = %s AND selected_course_code = %s
+            """, (student_id, course_code))
+            existing_selected_course = cursor.fetchone()
+            if not existing_selected_course:
+                return False, "Student has not selected this course"
+            # 檢查學生退選後是否低於學分下限
+            if student[4] - course[5] < 9:
+                return False, "If you withdraw this course, you will fall below the credit limit"
+            # 檢查是否為本班必修課程
+            if check and course[6] == 'R' and student[3] == course[4]:
+                return False, "This is a required course for your class"
+            # 將課程從 selected_course 資料表中刪除
+            cursor.execute("""
+                DELETE FROM selected_course WHERE student_id = %s AND selected_course_code = %s
+            """, (student_id, course_code))
+            conn.commit()
+            cursor.execute("""
+                UPDATE course SET enrolled_students = enrolled_students - 1 WHERE course_code = %s
+            """, (course_code,))
+            conn.commit()
+            cursor.execute("""
+                UPDATE students SET credits_selected = credits_selected - %s WHERE student_id = %s
+            """, (course[5], student_id))
+            conn.commit()
+            return True, "Course withdrawn successfully"
+    except pymysql.Error as e:
+        return False, str(e)
+    finally:
+        conn.close()
+
+def get_course_info(course_code):
+    conn = pymysql.connect(**db_settings)
+    try:
+        with conn.cursor() as cursor:
+            sql = """
+                SELECT course.course_code, course.course_name, course.department,
+                       course.credits, course.compulsory, course.total_students, course.enrolled_students, course.instructor
+                FROM course
+                WHERE course.course_code = %s
+            """
+            cursor.execute(sql, (course_code,))
+            course_info = cursor.fetchone()
+    finally:
+        conn.close()
+    return course_info

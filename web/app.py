@@ -139,6 +139,8 @@ def focus_course(course_code):
 def focus_list():
     # 從資料庫中獲取學生的關注課程列表
     focus_courses = get_student_focus_courses(current_user.id)
+    if not focus_courses:
+        return render_template('error.html', message='您尚未關注任何課程')
     modified_focus_courses = []
     for course in focus_courses:
         course_list = list(course)
@@ -153,7 +155,7 @@ def focus_list():
                 modified_time += f", {current_time}"
         course_list.append(modified_time)
         modified_focus_courses.append(course_list)
-    return render_template('focus.html', focus_courses=modified_focus_courses)
+    return render_template('course.html', focus_courses=modified_focus_courses)
 
 @app.route('/add_course/<course_code>', methods=['POST'])
 @login_required
@@ -181,8 +183,51 @@ def delete_focus_course(course_code):
 @app.route('/course', methods=['GET'])
 @login_required
 def course():
-    all_courses = get_student_course_schedule(current_user.id)
-    return render_template('course.html', all_courses=all_courses)
+    all_courses = get_student_selected_courses(current_user.id)
+    modified_all_courses = []
+    for course in all_courses:
+        course_list = list(course)
+        course_time = get_course_time(course_list[0])
+        course_list[4] = '必修' if course_list[4] == 'R' else '選修'
+        modified_time = ""
+        for time in course_time:
+            current_time = time_beautify(time)
+            if modified_time == "":
+                modified_time += current_time
+            else:
+                modified_time += f", {current_time}"
+        course_list.append(modified_time)
+        modified_all_courses.append(course_list)
+    return render_template('course.html', select_course=modified_all_courses)
+
+@app.route('/withdraw_course/<course_code>', methods=['POST'])
+@login_required
+def withdraw_course(course_code):
+    if request.method == 'POST':
+        student_id = current_user.id
+        success, message = withdraw_course_in(student_id, course_code, 1)
+        if success:
+            return render_template('success.html', message='退選成功', destination=url_for('schedule', student_id=student_id))
+        else:
+            if message == 'This is a required course for your class':
+                course_info = get_course_info(course_code)
+                return render_template('check_withdraw.html', course_info=course_info)
+            return render_template('error.html', message=message), 400
+
+@app.route('/check_withdraw/<course_code>', methods=['POST'])
+@login_required
+def withdraw_course_confirm(course_code):
+    if request.method == 'POST':
+        confirm = request.form['confirm']
+        if confirm == 'yes':
+            student_id = current_user.id
+            success, message = withdraw_course_in(student_id, course_code, 0)
+            if success:
+                return render_template('success.html', message='退選成功', destination=url_for('schedule', student_id=student_id))
+            else:
+                return render_template('error.html', message=message), 400
+        else:
+            return render_template('success.html', message='已取消退選', destination=url_for('course'))
 
 @app.route('/logout')
 @login_required
