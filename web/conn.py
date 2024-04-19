@@ -178,14 +178,6 @@ def add_focus_course(student_id, course_code):
                 VALUES (%s, %s, %s, %s)
             """, (student_id, student[3], student[0], course_code))
             conn.commit()
-            cursor.execute("""
-                UPDATE course SET enrolled_students = enrolled_students + 1 WHERE course_code = %s
-            """, (course_code,))
-            conn.commit()
-            cursor.execute("""
-                UPDATE students SET credits_selected = credits_selected + %s WHERE student_id = %s
-            """, (course[5], student_id))
-            conn.commit()
             return True, "Course added to focus successfully"
     except pymysql.Error as e:
         return False, str(e)
@@ -236,6 +228,18 @@ def add_course_in(student_id, course_code):
                 INSERT INTO selected_course (student_id, student_name, student_class, credits_selected, selected_course_code)
                 VALUES (%s, %s, %s, %s, %s)
             """, (student_id, student[0], student[3], course[5], course_code))
+            conn.commit()
+            cursor.execute("""
+                UPDATE course SET enrolled_students = enrolled_students + 1 WHERE course_code = %s
+            """, (course_code,))
+            conn.commit()
+            cursor.execute("""
+                UPDATE students SET credits_selected = credits_selected + %s WHERE student_id = %s
+            """, (course[5], student_id))
+            conn.commit()
+            cursor.execute("""
+                DELETE FROM focus WHERE student_id = %s AND focused_course_code = %s
+            """, (student_id, course_code))
             conn.commit()
             return True, "Course added to selected_course successfully"
     except pymysql.Error as e:
