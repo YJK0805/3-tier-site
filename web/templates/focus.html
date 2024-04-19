@@ -16,13 +16,11 @@ Focus Course
                 <th>Course Code</th>
                 <th>Course Name</th>
                 <th>Department</th>
-                <th>Grade</th>
-                <th>Class</th>
                 <th>Credits</th>
                 <th>Compulsory</th>
-                <th>Total Students</th>
-                <th>Enrolled Students</th>
+                <th>Time</th>
                 <th>Instructor</th>
+                <th>Enrolled/Total Seats</th>
                 <th>Delete</th>
             </tr>
         </thead>
@@ -38,11 +36,9 @@ Focus Course
                 <td>{{ course[2] }}</td>
                 <td>{{ course[3] }}</td>
                 <td>{{ course[4] }}</td>
-                <td>{{ course[5] }}</td>
-                <td>{{ course[6] }}</td>
-                <td>{{ course[7] }}</td>
                 <td>{{ course[8] }}</td>
-                <td>{{ course[9] }}</td>
+                <td>{{ course[7] }}</td>
+                <td>{{ course[6] }}/{{ course[5] }}</td>
                 <td>
                     <form action="{{ url_for('delete_focus_course', course_code=course[0]) }}" method="POST">
                         <button type="submit">Delete</button>

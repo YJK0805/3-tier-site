@@ -129,7 +129,7 @@ def search_courses(course_code, course_name, day, period, instructor):
         with conn.cursor() as cursor:
             sql = """
                 SELECT 
-                    course.course_code, course.course_name, course.credits, course.compulsory, 
+                    course.course_code, course.course_name, course.department, course.credits, course.compulsory, 
                     course.class_name, coursetime.day_of_week, 
                     CONCAT(coursetime.start_period, '-', coursetime.end_period) AS course_time, 
                     course.instructor, 
@@ -201,9 +201,8 @@ def get_student_focus_courses(student_id):
     try:
         with conn.cursor() as cursor:
             sql = """
-                SELECT course.course_code, course.course_name, course.department, course.grade,
-                       course.class_name, course.credits, course.compulsory,
-                       course.total_students, course.enrolled_students, course.instructor
+                SELECT course.course_code, course.course_name, course.department,
+                       course.credits, course.compulsory, course.total_students, course.enrolled_students, course.instructor
                 FROM focus
                 JOIN course ON focus.focused_course_code = course.course_code
                 WHERE focus.student_id = %s

@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, jsonify
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
-from conn import register_user, authenticate_user, insert_required_and_same_class_courses, get_student_course_schedule, get_student_department, update_student_credit, search_courses, add_focus_course, get_student_focus_courses, add_course_in, delete_focus, get_course_time
+from conn import *
 
 app = Flask(__name__)
 app.secret_key = 'secret_key'
@@ -83,6 +83,19 @@ def schedule(student_id):
             select_course[i - 1][int(day)] = course_name
     return render_template('schedule.html', student_courses=select_course)
 
+def time_beautify(time):
+    time = list(time)
+    time[0] = {
+        1: '(一)',
+        2: '(二)',
+        3: '(三)',
+        4: '(四)',
+        5: '(五)',
+    }.get(time[0], '未知')
+    if time[1] == time[2]:
+        return f"{time[0]}{time[1]}"
+    return f"{time[0]}{time[1]}-{time[2]}"
+
 @app.route('/search_course', methods=['GET', 'POST'])
 @login_required
 def search_course():
@@ -96,25 +109,16 @@ def search_course():
         modified_search_results = []
         for result in search_results:
             result_list = list(result)
-            result_list[3] = '必修' if result_list[3] == 'R' else '選修'
+            result_list[4] = '必修' if result_list[4] == 'R' else '選修'
             course_time = get_course_time(result_list[0])
             modified_time = ""
             for time in course_time:
-                time = list(time)
-                time[0] = {
-                    1: '(一)',
-                    2: '(二)',
-                    3: '(三)',
-                    4: '(四)',
-                    5: '(五)',
-                }.get(time[0], '未知')
-                if modified_time:
-                    modified_time += "、"
-                if time[1] == time[2]:
-                    modified_time += f"{time[0]}{time[1]}"
+                current_time = time_beautify(time)
+                if modified_time == "":
+                    modified_time += current_time
                 else:
-                    modified_time += f"{time[0]}{time[1]}-{time[2]}"
-            result_list[4] = modified_time
+                    modified_time += f", {current_time}"
+            result_list[5] = modified_time
             modified_search_results.append(result_list)
         return render_template('search_course.html', search_results=modified_search_results)
     return render_template('search_course.html')
@@ -135,7 +139,21 @@ def focus_course(course_code):
 def focus_list():
     # 從資料庫中獲取學生的關注課程列表
     focus_courses = get_student_focus_courses(current_user.id)
-    return render_template('focus.html', focus_courses=focus_courses)
+    modified_focus_courses = []
+    for course in focus_courses:
+        course_list = list(course)
+        course_time = get_course_time(course_list[0])
+        course_list[4] = '必修' if course_list[4] == 'R' else '選修'
+        modified_time = ""
+        for time in course_time:
+            current_time = time_beautify(time)
+            if modified_time == "":
+                modified_time += current_time
+            else:
+                modified_time += f", {current_time}"
+        course_list.append(modified_time)
+        modified_focus_courses.append(course_list)
+    return render_template('focus.html', focus_courses=modified_focus_courses)
 
 @app.route('/add_course/<course_code>', methods=['POST'])
 @login_required
@@ -159,6 +177,12 @@ def delete_focus_course(course_code):
             return render_template('success.html', message='刪除關注課程成功', destination=url_for('focus_list'))
         else:
             return render_template('error.html', message=message), 400
+
+@app.route('/course', methods=['GET'])
+@login_required
+def course():
+    all_courses = get_student_course_schedule(current_user.id)
+    return render_template('course.html', all_courses=all_courses)
 
 @app.route('/logout')
 @login_required
