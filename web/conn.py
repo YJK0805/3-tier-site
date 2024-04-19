@@ -176,14 +176,14 @@ def add_focus_course(student_id, course_code):
             """, (student_id, course_code))
             existing_selected_course = cursor.fetchone()
             if existing_selected_course:
-                return False, "Student has already selected this course"
+                return False, "學生已經選過該課程"
             # 檢查學生是否已經關注過該課程
             cursor.execute("""
                 SELECT * FROM focus WHERE student_id = %s AND focused_course_code = %s
             """, (student_id, course_code))
             existing_focus = cursor.fetchone()
             if existing_focus:
-                return False, "Student has already focused on this course"
+                return False, "學生已經關注過該課程"
             # 將課程添加到 focus 資料表中
             cursor.execute("""
                 INSERT INTO focus (student_id, student_class, student_name, focused_course_code)
@@ -205,7 +205,7 @@ def get_student_focus_courses(student_id):
                        course.credits, course.compulsory, course.total_students, course.enrolled_students, course.instructor
                 FROM focus
                 JOIN course ON focus.focused_course_code = course.course_code
-                WHERE focus.student_id = %s
+                WHERE focus.student_id = %s ORDER BY course.course_code
             """
             cursor.execute(sql, (student_id,))
             focus_courses = cursor.fetchall()
@@ -222,7 +222,7 @@ def get_student_selected_courses(student_id):
                        course.credits, course.compulsory, course.total_students, course.enrolled_students, course.instructor
                 FROM selected_course
                 JOIN course ON selected_course.selected_course_code = course.course_code
-                WHERE selected_course.student_id = %s
+                WHERE selected_course.student_id = %s ORDER BY course.course_code
             """
             cursor.execute(sql, (student_id,))
             selected_courses = cursor.fetchall()
@@ -276,32 +276,32 @@ def add_course_in(student_id, course_code):
             cursor.execute("SELECT * FROM students WHERE student_id = %s", (student_id,))
             student = cursor.fetchone()
             if not student:
-                return False, "Student not found"
+                return False, "學生不存在"
             # 檢查課程是否存在
             cursor.execute("SELECT * FROM course WHERE course_code = %s", (course_code,))
             course = cursor.fetchone()
             if not course:
-                return False, "Course not found"
+                return False, "課程不存在"
             # 檢查學生是否已經選過該課程或是有相同名稱之課程
             cursor.execute("""
             SELECT * FROM selected_course WHERE student_id = %s AND selected_course_code = %s OR student_id = %s AND selected_course_code IN (SELECT course_code FROM course WHERE course_name = %s)
             """, (student_id, course_code, student_id, course[1]))
             existing_selected_course = cursor.fetchone()
             if existing_selected_course:
-                return False, "Student has already selected this course"
+                return False, "學生已經選過該課程或是有相同名稱之課程"
             # 檢查學生是否有時間衝突
             check_time = check_time_conflict(student_id, course_code)
             if check_time:
-                return False, "Time conflict"
+                return False, "時間與已選課程衝突"
             # 檢查課程是否已滿
             if course[8] >= course[7]:
-                return False, "Course is full"
+                return False, "課程人數已滿"
             # 檢查學生加選後是否超過學分上限
             if student[4] + course[5] > 30:
-                return False, "If you add this course, you will exceed the credit limit"
+                return False, "學分佳選後將超過學分上限"
             # 檢查學生是否可以選修該課程(只能加選自己科系的課程)
             if student[2] != course[2]:
-                return False, "You can only add courses from your department"
+                return False, "只能加選本系課程"
             # 將課程添加到 selected_course 資料表中
             cursor.execute("""
                 INSERT INTO selected_course (student_id, student_name, student_class, credits_selected, selected_course_code)
@@ -334,25 +334,25 @@ def delete_focus(student_id, course_code):
             cursor.execute("SELECT * FROM students WHERE student_id = %s", (student_id,))
             student = cursor.fetchone()
             if not student:
-                return False, "Student not found"
+                return False, "學生不存在"
             # 檢查課程是否存在
             cursor.execute("SELECT * FROM course WHERE course_code = %s", (course_code,))
             course = cursor.fetchone()
             if not course:
-                return False, "Course not found"
+                return False, "課程不存在"
             # 檢查學生是否已經關注過該課程
             cursor.execute("""
                 SELECT * FROM focus WHERE student_id = %s AND focused_course_code = %s
             """, (student_id, course_code))
             existing_focus = cursor.fetchone()
             if not existing_focus:
-                return False, "Student has not focused on this course"
+                return False, "學生尚未關注該課程"
             # 刪除 focus 資料表中的課程
             cursor.execute("""
                 DELETE FROM focus WHERE student_id = %s AND focused_course_code = %s
             """, (student_id, course_code))
             conn.commit()
-            return True, "Course deleted from focus successfully"
+            return True, "課程已從關注列表中刪除"
     except pymysql.Error as e:
         return False, str(e)
     finally:
@@ -366,25 +366,25 @@ def withdraw_course_in(student_id, course_code, check):
             cursor.execute("SELECT * FROM students WHERE student_id = %s", (student_id,))
             student = cursor.fetchone()
             if not student:
-                return False, "Student not found"
+                return False, "學生不存在"
             # 檢查課程是否存在
             cursor.execute("SELECT * FROM course WHERE course_code = %s", (course_code,))
             course = cursor.fetchone()
             if not course:
-                return False, "Course not found"
+                return False, "課程不存在"
             # 檢查學生是否已經選過該課程
             cursor.execute("""
                 SELECT * FROM selected_course WHERE student_id = %s AND selected_course_code = %s
             """, (student_id, course_code))
             existing_selected_course = cursor.fetchone()
             if not existing_selected_course:
-                return False, "Student has not selected this course"
+                return False, "學生尚未選過該課程"
             # 檢查學生退選後是否低於學分下限
             if student[4] - course[5] < 9:
-                return False, "If you withdraw this course, you will fall below the credit limit"
+                return False, "退選後將低於學分下限"
             # 檢查是否為本班必修課程
             if check and course[6] == 'R' and student[3] == course[4]:
-                return False, "This is a required course for your class"
+                return False, "本班必修課程退選必須經過確認"
             # 將課程從 selected_course 資料表中刪除
             cursor.execute("""
                 DELETE FROM selected_course WHERE student_id = %s AND selected_course_code = %s

@@ -4,9 +4,9 @@
 
 {% block content %}
     <h2>Withdraw Course</h2>
-    <p>This course is a required course for your class. Are you sure you want to withdraw from it?</p>
-    <p>Course Name: {{ course_info[1] }}</p>
-    <p>Course Code: {{ course_info[0] }}</p>
+    <p>此課程為本班必修課程，您確定要退選嗎？</p>
+    <p>課程名稱: {{ course_info[1] }}</p>
+    <p>課程代碼: {{ course_info[0] }}</p>
     <form action="{{ url_for('withdraw_course_confirm', course_code=course_info[0]) }}" method="POST">
         <button type="submit" class="btn btn-danger" name="confirm" value="yes">Yes</button>
         <button type="submit" class="btn btn-secondary" name="confirm" value="no">No</button>

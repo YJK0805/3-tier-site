@@ -209,7 +209,7 @@ def withdraw_course(course_code):
         if success:
             return render_template('success.html', message='退選成功', destination=url_for('schedule', student_id=student_id))
         else:
-            if message == 'This is a required course for your class':
+            if message == '本班必修課程退選必須經過確認':
                 course_info = get_course_info(course_code)
                 return render_template('check_withdraw.html', course_info=course_info)
             return render_template('error.html', message=message), 400

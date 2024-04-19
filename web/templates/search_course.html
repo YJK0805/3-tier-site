@@ -1,36 +1,36 @@
 {% extends "master.html" %}
 
 {% block title %}
-Search Courses
+搜尋課程
 {% endblock %}
 
 {% block content %}
-<h2>Search Courses</h2>
+<h2>搜尋課程</h2>
 
 <form action="/search_course" method="post">
-    <label for="course_code">Course Code:</label>
+    <label for="course_code">課程代碼:</label>
     <input type="text" id="course_code" name="course_code" placeholder="Enter course code">
     <br>
-    <label for="course_name">Course Name:</label>
+    <label for="course_name">課程名稱:</label>
     <input type="text" id="course_name" name="course_name" placeholder="Enter course name">
     <br>
-    <label for="course_time">Course Time:</label>
+    <label for="course_time">課程時間:</label>
     <select id="course_day" name="course_day">
-        <option value="">Select Day</option>
-        <option value="1">Monday</option>
-        <option value="2">Tuesday</option>
-        <option value="3">Wednesday</option>
-        <option value="4">Thursday</option>
-        <option value="5">Friday</option>
+        <option value="">星期</option>
+        <option value="1">週一</option>
+        <option value="2">週二</option>
+        <option value="3">週三</option>
+        <option value="4">週四</option>
+        <option value="5">週五</option>
     </select>
     <select id="course_period" name="course_period">
-        <option value="">Select Period</option>
+        <option value="">節次</option>
         {% for i in range(1, 15) %}
             <option value="{{ i }}">{{ i }}</option>
         {% endfor %}
     </select>
     <br>
-    <label for="instructor">Instructor:</label>
+    <label for="instructor">授課教師:</label>
     <input type="text" id="instructor" name="instructor" placeholder="Enter instructor's name">
     <br>
     <button type="submit">Search</button>
@@ -41,15 +41,15 @@ Search Courses
     <table>
         <thead>
             <tr>
-                <th>Focus course</th>
-                <th>Course Code</th>
-                <th>Course Name</th>
-                <th>Department</th>
-                <th>Credits</th>
-                <th>Compulsory</th>
-                <th>Time</th>
-                <th>Instructor</th>
-                <th>Enrolled/Total Seats</th>
+                <th>關注課程</th>
+                <th>課程代碼</th>
+                <th>課程名稱</th>
+                <th>科系</th>
+                <th>學分</th>
+                <th>必選修</th>
+                <th>時間</th>
+                <th>授課教師</th>
+                <th>已選名額/總名額</th>
             </tr>
         </thead>
         <tbody>
@@ -57,7 +57,7 @@ Search Courses
             <tr>
                 <td>
                     <form action="{{ url_for('focus_course', course_code=result[0]) }}" method="POST">
-                        <button type="submit">Focus</button>
+                        <button type="submit">關注</button>
                     </form>
                 </td>
                 <td>{{ result[0] }}</td>

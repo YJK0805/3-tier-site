@@ -7,6 +7,10 @@ body {
     text-align: center;
 }
 
+a {
+    text-decoration: none; /* 移除下劃線 */
+}
+
 header {
     background-color: #007bff; /* 背景顏色 */
     color: #ffffff; /* 文字顏色 */

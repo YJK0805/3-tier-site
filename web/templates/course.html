@@ -2,20 +2,20 @@
 
 {% block title %}
 {% if focus_courses %}
-    Focus Course
+    關注課程
 {% endif %}
 {% if select_course %}
-    Select Course
+    已選課程
 {% endif %}
 {% endblock %}
 
 {% block content %}
 {% if focus_courses %}
-    <h2>Focus Course</h2>
+    <h2>關注課程</h2>
 {% endif %}
 
 {% if select_course %}
-    <h2>Select Course</h2>
+    <h2>已選課程</h2>
 {% endif %}
 
 {% if focus_courses or select_course %}
@@ -23,21 +23,21 @@
         <thead>
             <tr>
                 {% if focus_courses %}
-                    <th>Add Course</th>
+                    <th>關注課程</th>
                 {% endif %}
-                <th>Course Code</th>
-                <th>Course Name</th>
-                <th>Department</th>
-                <th>Credits</th>
-                <th>Compulsory</th>
-                <th>Time</th>
-                <th>Instructor</th>
-                <th>Enrolled/Total Seats</th>
+                <th>課程代碼</th>
+                <th>課程名稱</th>
+                <th>科系</th>
+                <th>學分</th>
+                <th>必選修</th>
+                <th>時間</th>
+                <th>授課教師</th>
+                <th>已選名額/總名額</th>
                 {% if focus_courses %}
-                    <th>Delete</th>
+                    <th>刪除</th>
                 {% endif %}
                 {% if select_course %}
-                    <th>Withdraw</th>
+                    <th>退選</th>
                 {% endif %}
             </tr>
         </thead>
@@ -46,7 +46,7 @@
                 {% for course in focus_courses %}
                     <td>
                         <form action="{{ url_for('add_course', course_code=course[0]) }}" method="POST">
-                            <button type="submit">Add</button>
+                            <button type="submit">加選</button>
                         </form>
                     </td>
                     <td>{{ course[0] }}</td>
@@ -59,7 +59,7 @@
                     <td>{{ course[6] }}/{{ course[5] }}</td>
                     <td>
                         <form action="{{ url_for('delete_focus_course', course_code=course[0]) }}" method="POST">
-                            <button type="submit">Delete</button>
+                            <button type="submit">刪除</button>
                         </form>
                     </tr>
                 {% endfor %}
@@ -76,7 +76,7 @@
                     <td>{{ course[6] }}/{{ course[5] }}</td>
                     <td>
                         <form action="{{ url_for('withdraw_course', course_code=course[0]) }}" method="POST">
-                            <button type="submit">Withdraw</button>
+                            <button type="submit">退選</button>
                         </form>
                     </td>
                 </tr>
@@ -85,7 +85,7 @@
         </tbody>
     </table>
 {% else %}
-    <p>No courses focused yet.</p>
+    <p>目前沒有任何課程</p>
 {% endif %}
 {% endblock %}
 

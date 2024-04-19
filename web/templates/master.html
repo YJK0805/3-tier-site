@@ -8,20 +8,20 @@
 </head>
 <body>
     <header>
-        <h1>Student Course Registration System</h1>
+        <h1><a href="/">Student Course Registration System</a></h1>
         <nav>
             <ul>
-                <li><a href="/">Home</a></li>
+                <li><a href="/">首頁</a></li>
                 {% if current_user.is_authenticated %}
                     <!-- if the user is authenticated, show the following links -->
-                    <li><a href="{{ url_for('schedule', student_id=current_user.id) }}">My Schedule</a></li>
-                    <li><a href="/search_course">Search</a></li>
-                    <li><a href="/focus_list">Focus</a></li>
-                    <li><a href="/course">Course</a></li>
-                    <li><a href="/logout">Logout</a></li>
+                    <li><a href="{{ url_for('schedule', student_id=current_user.id) }}">課表</a></li>
+                    <li><a href="/search_course">搜尋課程</a></li>
+                    <li><a href="/focus_list">關注清單</a></li>
+                    <li><a href="/course">已選課程</a></li>
+                    <li><a href="/logout">登出</a></li>
                 {% else %}
-                    <li><a href="/login">Login</a></li>
-                    <li><a href="/register">Register</a></li>
+                    <li><a href="/login">登入</a></li>
+                    <li><a href="/register">註冊</a></li>
                 {% endif %}
             </ul>
         </nav>

@@ -1,28 +1,28 @@
 {% extends "master.html" %}
 
-{% block title %}Register{% endblock %}
+{% block title %}註冊{% endblock %}
 
 {% block content %}
-    <h1>Register</h1>
+    <h1>註冊</h1>
     <form action="/register" method="post">
         <div>
-        <label for="student_name">Student Name:</label>
+        <label for="student_name">姓名:</label>
         <input type="text" id="student_name" name="student_name" required>
         </div>
         <div>
-        <label for="student_id">Student ID:</label>
+        <label for="student_id">學號:</label>
         <input type="text" id="student_id" name="student_id" required>
         </div>
         <div>
-        <label for="student_class">Student Class:</label>
+        <label for="student_class">班級:</label>
         <input type="text" id="student_class" name="student_class" required>
         </div>
         <div>
-        <label for="password">Password:</label>
+        <label for="password">密碼:</label>
         <input type="password" id="password" name="password" required>
         </div>
         <input type="submit" value="Register">
     </form>
-    <p>Already have an account? <a href="/login">Login here</a>.</p>
+    <p>已經有帳號了? <a href="/login">在這裡登入</a>。</p>
 {% endblock %}
 
