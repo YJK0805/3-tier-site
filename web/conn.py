@@ -214,6 +214,44 @@ def get_student_focus_courses(student_id):
         conn.close()
     return focus_courses
 
+def is_time_conflict(course_time1, course_time2):
+    # 檢查兩門課程是否在同一天
+    if course_time1[0] != course_time2[0]:
+        return False
+    # 檢查兩門課程是否在同一時段
+    if course_time1[1] <= course_time2[2] and course_time1[2] >= course_time2[1]:
+        return True
+    return False
+
+def check_time_conflict(student_id, selected_course_code):
+    conn = pymysql.connect(**db_settings)
+    try:
+        with conn.cursor() as cursor:
+            # 獲取學生已選課程的時間
+            cursor.execute("""
+                SELECT coursetime.day_of_week, coursetime.start_period, coursetime.end_period
+                FROM selected_course
+                JOIN coursetime ON selected_course.selected_course_code = coursetime.course_code
+                WHERE selected_course.student_id = %s
+            """, (student_id,))
+            student_selected_courses = cursor.fetchall()
+            student_selected_courses = [list(course) for course in student_selected_courses]
+            # 獲取目標課程的時間
+            cursor.execute("""
+                SELECT coursetime.day_of_week, coursetime.start_period, coursetime.end_period
+                FROM coursetime
+                WHERE coursetime.course_code = %s
+            """, (selected_course_code,))
+            target_course_time = cursor.fetchall()
+            target_course_time = [list(course) for course in target_course_time]
+            for student_selected in student_selected_courses:
+                for target_course in target_course_time:
+                    if is_time_conflict(student_selected, target_course):
+                        return True
+            return False
+    finally:
+        conn.close()
+
 def add_course_in(student_id, course_code):
     conn = pymysql.connect(**db_settings)
     try:
@@ -235,6 +273,19 @@ def add_course_in(student_id, course_code):
             existing_selected_course = cursor.fetchone()
             if existing_selected_course:
                 return False, "Student has already selected this course"
+            # 檢查學生是否有時間衝突
+            check_time = check_time_conflict(student_id, course_code)
+            if check_time:
+                return False, "Time conflict"
+            # 檢查課程是否已滿
+            if course[8] >= course[7]:
+                return False, "Course is full"
+            # 檢查學生加選後是否超過學分上限
+            if student[4] + course[5] > 30:
+                return False, "If you add this course, you will exceed the credit limit"
+            # 檢查學生是否可以選修該課程(只能加選自己科系的課程)
+            if student[2] != course[2]:
+                return False, "You can only add courses from your department"
             # 將課程添加到 selected_course 資料表中
             cursor.execute("""
                 INSERT INTO selected_course (student_id, student_name, student_class, credits_selected, selected_course_code)
