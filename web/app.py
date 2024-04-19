@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, jsonify
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
-from conn import register_user, authenticate_user, insert_required_and_same_class_courses, get_student_course_schedule, get_student_department, update_student_credit, search_courses, add_focus_course, get_student_focus_courses, add_course_in
+from conn import register_user, authenticate_user, insert_required_and_same_class_courses, get_student_course_schedule, get_student_department, update_student_credit, search_courses, add_focus_course, get_student_focus_courses, add_course_in, delete_focus
 
 app = Flask(__name__)
 app.secret_key = 'secret_key'
@@ -23,11 +23,6 @@ def load_user(user_id):
 @app.route('/')
 def index():
     return render_template('index.html')
-
-@app.route('/select_course', methods=['POST'])
-def select_course():
-    # Your course selection logic here
-    pass
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -139,6 +134,18 @@ def add_course(course_code):
         success, message = add_course_in(student_id, course_code)
         if success:
             return render_template('success.html', message='選課成功', destination=url_for('schedule', student_id=student_id))
+        else:
+            return render_template('error.html', message=message), 400
+
+@app.route('/delete_focus_course/<course_code>', methods=['POST'])
+@login_required
+def delete_focus_course(course_code):
+    if request.method == 'POST':
+        student_id = current_user.id
+        # 從資料庫中刪除學生的關注課程
+        success, message = delete_focus(student_id, course_code)
+        if success:
+            return render_template('success.html', message='刪除關注課程成功', destination=url_for('focus_list'))
         else:
             return render_template('error.html', message=message), 400
 

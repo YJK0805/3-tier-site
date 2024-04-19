@@ -234,3 +234,35 @@ def add_course_in(student_id, course_code):
         return False, str(e)
     finally:
         conn.close()
+
+def delete_focus(student_id, course_code):
+    conn = pymysql.connect(**db_settings)
+    try:
+        with conn.cursor() as cursor:
+            # 檢查學生是否存在
+            cursor.execute("SELECT * FROM students WHERE student_id = %s", (student_id,))
+            student = cursor.fetchone()
+            if not student:
+                return False, "Student not found"
+            # 檢查課程是否存在
+            cursor.execute("SELECT * FROM course WHERE course_code = %s", (course_code,))
+            course = cursor.fetchone()
+            if not course:
+                return False, "Course not found"
+            # 檢查學生是否已經關注過該課程
+            cursor.execute("""
+                SELECT * FROM focus WHERE student_id = %s AND focused_course_code = %s
+            """, (student_id, course_code))
+            existing_focus = cursor.fetchone()
+            if not existing_focus:
+                return False, "Student has not focused on this course"
+            # 刪除 focus 資料表中的課程
+            cursor.execute("""
+                DELETE FROM focus WHERE student_id = %s AND focused_course_code = %s
+            """, (student_id, course_code))
+            conn.commit()
+            return True, "Course deleted from focus successfully"
+    except pymysql.Error as e:
+        return False, str(e)
+    finally:
+        conn.close()

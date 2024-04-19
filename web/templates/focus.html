@@ -23,6 +23,7 @@ Focus Course
                 <th>Total Students</th>
                 <th>Enrolled Students</th>
                 <th>Instructor</th>
+                <th>Delete</th>
             </tr>
         </thead>
         <tbody>
@@ -42,7 +43,11 @@ Focus Course
                 <td>{{ course[7] }}</td>
                 <td>{{ course[8] }}</td>
                 <td>{{ course[9] }}</td>
-            </tr>
+                <td>
+                    <form action="{{ url_for('delete_focus_course', course_code=course[0]) }}" method="POST">
+                        <button type="submit">Delete</button>
+                    </form>
+                </tr>
             {% endfor %}
         </tbody>
     </table>
