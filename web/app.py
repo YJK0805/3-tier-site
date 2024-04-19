@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, jsonify
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
-from conn import register_user, authenticate_user, insert_required_and_same_class_courses, get_student_course_schedule, get_student_department, update_student_credit, search_courses, add_focus_course, get_student_focus_courses, add_course_in, delete_focus
+from conn import register_user, authenticate_user, insert_required_and_same_class_courses, get_student_course_schedule, get_student_department, update_student_credit, search_courses, add_focus_course, get_student_focus_courses, add_course_in, delete_focus, get_course_time
 
 app = Flask(__name__)
 app.secret_key = 'secret_key'
@@ -97,13 +97,24 @@ def search_course():
         for result in search_results:
             result_list = list(result)
             result_list[3] = '必修' if result_list[3] == 'R' else '選修'
-            result_list[5] = {
-                1: '(一)',
-                2: '(二)',
-                3: '(三)',
-                4: '(四)',
-                5: '(五)',
-            }.get(result_list[5], '未知')
+            course_time = get_course_time(result_list[0])
+            modified_time = ""
+            for time in course_time:
+                time = list(time)
+                time[0] = {
+                    1: '(一)',
+                    2: '(二)',
+                    3: '(三)',
+                    4: '(四)',
+                    5: '(五)',
+                }.get(time[0], '未知')
+                if modified_time:
+                    modified_time += "、"
+                if time[1] == time[2]:
+                    modified_time += f"{time[0]}{time[1]}"
+                else:
+                    modified_time += f"{time[0]}{time[1]}-{time[2]}"
+            result_list[4] = modified_time
             modified_search_results.append(result_list)
         return render_template('search_course.html', search_results=modified_search_results)
     return render_template('search_course.html')

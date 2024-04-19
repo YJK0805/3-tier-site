@@ -78,6 +78,18 @@ def get_student_course_schedule(student_id):
         conn.close()
     return student_schedule
 
+# 獲取課程時間
+def get_course_time(course_code):
+    conn = pymysql.connect(**db_settings)
+    try:
+        with conn.cursor() as cursor:
+            sql = "SELECT day_of_week, start_period, end_period FROM coursetime WHERE course_code = %s ORDER BY day_of_week, start_period"
+            cursor.execute(sql, (course_code,))
+            course_time = cursor.fetchall()
+    finally:
+        conn.close()
+    return course_time
+
 # 獲取學生科系
 def get_student_department(student_class):
     conn = pymysql.connect(**db_settings)
