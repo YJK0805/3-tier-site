@@ -15,7 +15,11 @@
         </div>
         <div>
         <label for="student_class">班級:</label>
-        <input type="text" id="student_class" name="student_class" required>
+        <select id="student_class" name="student_class" required>
+            {% for class in class_list %}
+            <option value="{{ class }}">{{ class }}</option>
+            {% endfor %}
+        </select>
         </div>
         <div>
         <label for="password">密碼:</label>

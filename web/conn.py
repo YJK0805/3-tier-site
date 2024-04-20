@@ -419,3 +419,14 @@ def get_course_info(course_code):
     finally:
         conn.close()
     return course_info
+
+def get_class_list():
+    conn = pymysql.connect(**db_settings)
+    try:
+        with conn.cursor() as cursor:
+            sql = "SELECT DISTINCT class_name FROM course"
+            cursor.execute(sql)
+            class_list = cursor.fetchall()
+    finally:
+        conn.close()
+    return class_list

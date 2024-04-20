@@ -45,6 +45,7 @@ def register():
         student_id = request.form['student_id']
         student_class = request.form['student_class']
         password = request.form['password']
+        print(student_name, student_id, student_class, password)
         student_department = get_student_department(student_class)
         register_user(student_name, student_id, student_department, student_class, password)
         insert_required_and_same_class_courses(student_id, student_name, student_class)
@@ -53,7 +54,14 @@ def register():
         user = User(student_id)
         login_user(user)
         return redirect(url_for('index'))
-    return render_template('register.html')
+    class_list = get_class_list()
+    modified_class_list = []
+    for classes in class_list:
+        classes = list(classes)[0].split()[0]
+        if classes[-1] == '合':
+            continue
+        modified_class_list.append(classes)
+    return render_template('register.html', class_list=modified_class_list)
 
 @app.route('/schedule/<student_id>')
 @login_required
