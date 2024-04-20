@@ -193,6 +193,7 @@ def delete_focus_course(course_code):
 def course():
     all_courses = get_student_selected_courses(current_user.id)
     modified_all_courses = []
+    student_credit = get_student_credit(current_user.id)
     for course in all_courses:
         course_list = list(course)
         course_time = get_course_time(course_list[0])
@@ -206,7 +207,7 @@ def course():
                 modified_time += f", {current_time}"
         course_list.append(modified_time)
         modified_all_courses.append(course_list)
-    return render_template('course.html', select_course=modified_all_courses)
+    return render_template('course.html', select_course=modified_all_courses, student_credit=student_credit)
 
 @app.route('/withdraw_course/<course_code>', methods=['POST'])
 @login_required

@@ -430,3 +430,14 @@ def get_class_list():
     finally:
         conn.close()
     return class_list
+
+def get_student_credit(student_id):
+    conn = pymysql.connect(**db_settings)
+    try:
+        with conn.cursor() as cursor:
+            sql = "SELECT credits_selected FROM students WHERE student_id = %s"
+            cursor.execute(sql, (student_id,))
+            student_credit = cursor.fetchone()
+    finally:
+        conn.close()
+    return student_credit[0]
