@@ -57,18 +57,14 @@ footer {
 
 /* 增加表格的外邊框和內邊距 */
 table {
+    margin: 0 auto; /* 將表格置中 */
     border-collapse: collapse;
     width: 40%;
 }
 
-td, th, tr {
+td, th {
     width: 20px; /* 設定寬度 */
     height: 10px; /* 設定高度 */
-    border: 1px solid #ddd;
-    padding: 8px;
-}
-
-table{
     border: 1px solid #ddd;
     padding: 8px;
 }
