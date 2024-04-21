@@ -298,7 +298,7 @@ def add_course_in(student_id, course_code):
                 return False, "課程人數已滿"
             # 檢查學生加選後是否超過學分上限
             if student[4] + course[5] > 30:
-                return False, "學分佳選後將超過學分上限"
+                return False, "學分加選後將超過學分上限"
             # 檢查學生是否可以選修該課程(只能加選自己科系的課程)
             if student[2] != course[2]:
                 return False, "只能加選本系課程"
