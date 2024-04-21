@@ -112,7 +112,8 @@ CREATE TABLE IF NOT EXISTS coursetime (
     course_code INT,
     day_of_week INT,
     start_period INT,
-    end_period INT
+    end_period INT,
+    FOREIGN KEY (course_code) REFERENCES course(course_code)
 );
 
 -- 將課程時間資料寫入課程時間表格
@@ -141,8 +142,8 @@ VALUES
 (1283, '1', 8, 9),
 (1284, '2', 8, 9),
 (1285, '1', 3, 4),
-(1287, '3', 6, 7),
-(1287, '4', 1, 4),
+(1286, '3', 6, 7),
+(1286, '4', 1, 4),
 (1288, '3', 2, 4),
 (1289, '4', 7, 8),
 (1290, '1', 6, 7),
