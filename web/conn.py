@@ -137,10 +137,8 @@ def search_courses(course_code, course_name, day, period, instructor):
                     course.total_students
                 FROM 
                     course 
-                LEFT JOIN 
+                JOIN 
                     coursetime ON course.course_code = coursetime.course_code
-                LEFT JOIN 
-                    selected_course ON course.course_code = selected_course.selected_course_code
                 WHERE 
                     (%s = '' OR course.course_code = %s)
                     AND (%s = '' OR course.course_name LIKE %s)
